@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
+		<script src="Yii.js"></script>
+	</head>
+	<body>
+		<script type="text/template" id="woof-template">
+			<div>
+				<p><h1>Profile</h1></p>
+				<img src="<%= img %>" width="100" height="100" style="border-width:1px;border-style:solid"></img>
+				<p><b>Name:</b> <%= name %></p>
+				<p><b>Location:</b> <%= location %></p>
+				<p><button type="submit" id="hello">Click me</button></p>
+				<p><button type="submit" id="goodbye">Click me</button></p>
+			</div>
+		</script>
+		
+		<div id="viewer"></div>
+
+		<script>
+			var profile = new Object({
+				name: 'Mr. Happy',
+				location: 'Happyland',
+				img: 'MrHappy.jpg'
+			});
+
+			var MyView = View.extend({
+				id: 'viewer',
+
+				template: $('#woof-template').html(),
+
+				model: profile,
+
+				events: {
+					'click #hello': 'woof',
+					'click #goodbye': 'meow'
+				},
+
+				woof: function() {
+					alert('Hello World!');
+				},
+
+				meow: function() {
+					alert('Goodbye World!');
+				}
+			});
+
+			var myView = new MyView();
+
+			myView.render();
+		</script>
+	</body>
+</html>
