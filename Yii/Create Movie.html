@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
+		<script src="Yii.js"></script>
+	</head>
+	<body>
+		<script type="text/template" id="woof-template">
+			<div>
+				<form id="add-movie-form">
+					<legend>New Movie</legend>
+					<label>Title</label>
+					<input name="movie[title]" type="text" value="meow" />
+					<label>Summary</label>
+					<input name="movie[summary]" type="text" value="woof" />
+					<label>Image</label>
+					<input name="movie[img]" type="file" />
+					<br/>
+					<button type="submit" id="add">Create Movie</button>
+					<button type="submit" id="delete">Delete Movie</button>
+					<button type="submit" id="update">Update Movie</button>
+				</form>
+			</div>
+		</script>
+		
+		<div id="viewer"></div>
+
+		<script>
+			var MyView = Yii.View.extend({
+				id: 'viewer',
+
+				template: $('#woof-template').html(),
+
+				events: {
+					'click #add': 'woof',
+					'click #delete': 'meow',
+					'click #update': 'moo'
+				},
+
+				woof: function() {
+					var myModel = new MyModel();
+
+					myModel.save({
+						'access_token' : '04504e105284569ea74030908d006252'
+						}, {
+						form: '#add-movie-form',
+
+						success: function() {
+							console.log('success');
+						}
+					});
+
+					return false;
+				},
+
+				meow: function() {
+					var myModel = new MyModel();
+
+					myModel.destroy({
+						'access_token' : '04504e105284569ea74030908d006252'
+						}, {
+						success: function() {
+							console.log('success');
+						}
+					});
+
+					return false;
+				},
+
+				moo: function() {
+					var myModel = new MyModel();
+
+					myModel.update({
+						'access_token' : '04504e105284569ea74030908d006252'
+						}, {
+						form: '#add-movie-form',
+
+						success: function() {
+							console.log('success');
+						}
+					});
+
+					return false;
+				}
+			});
+
+			var myView = new MyView();
+			myView.render();
+
+			var MyModel = Yii.Model.extend({
+				url: 'http://cs3213.herokuapp.com/movies/467.json'
+			});
+		</script>
+	</body>
+</html>
