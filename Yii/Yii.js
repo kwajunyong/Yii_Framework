@@ -2,6 +2,97 @@ var Yii = {};
 
 Yii.$ = this.jQuery;
 
+var PubSub = Yii.PubSub = {
+	slice: [].slice,
+
+	subscriptions: {},
+
+	publish: function( topic ) {
+		var args = this.slice.call( arguments, 1 ),
+		topicSubscriptions,
+		subscription,
+		length,
+		i = 0,
+		ret;
+
+		if ( !this.subscriptions[ topic ] ) {
+			return true;
+		}
+
+		topicSubscriptions = this.subscriptions[ topic ].slice();
+		for ( length = topicSubscriptions.length; i < length; i++ ) {
+			subscription = topicSubscriptions[ i ];
+			ret = subscription.callback.apply( subscription.context, args );
+			if ( ret === false ) {
+				break;
+			}
+		}
+		return ret !== false;
+	},
+
+	subscribe: function( topic, context, callback, priority ) {
+		if ( arguments.length === 3 && typeof callback === "number" ) {
+			priority = callback;
+			callback = context;
+			context = null;
+		}
+		if ( arguments.length === 2 ) {
+			callback = context;
+			context = null;
+		}
+		priority = priority || 10;
+
+		var topicIndex = 0,
+		topics = topic.split( /\s/ ),
+		topicLength = topics.length,
+		added;
+		for ( ; topicIndex < topicLength; topicIndex++ ) {
+			topic = topics[ topicIndex ];
+			added = false;
+			if ( !this.subscriptions[ topic ] ) {
+				this.subscriptions[ topic ] = [];
+			}
+
+			var i = this.subscriptions[ topic ].length - 1,
+			subscriptionInfo = {
+				callback: callback,
+				context: context,
+				priority: priority
+			};
+
+			for ( ; i >= 0; i-- ) {
+				if ( this.subscriptions[ topic ][ i ].priority <= priority ) {
+					this.subscriptions[ topic ].splice( i + 1, 0, subscriptionInfo );
+					added = true;
+					break;
+				}
+			}
+
+			if ( !added ) {
+				this.subscriptions[ topic ].unshift( subscriptionInfo );
+			}
+		}
+
+		return callback;
+	},
+
+	unsubscribe: function( topic, callback ) {
+		if ( !this.subscriptions[ topic ] ) {
+			return;
+		}
+
+		var length = this.subscriptions[ topic ].length,
+		i = 0;
+
+		for ( ; i < length; i++ ) {
+			if ( this.subscriptions[ topic ][ i ].callback === callback ) {
+				this.subscriptions[ topic ].splice( i, 1 );
+				break;
+			}
+		}
+	}
+};
+
 var Router = Yii.Router = function(options) {
 	this.initialize.apply(this, arguments);
 }
@@ -19,6 +110,7 @@ Router.prototype = {
 		}
 
 		this.currentHash = this._parseURL(document.URL).hash;
+		this._triggerRoutes(this.currentHash);
 
 		var that = this;
 		
@@ -195,8 +287,10 @@ View.prototype = {
 		this.element.html(output);
 
 		return this;
-	},
-}
+	}
+};
+
+_.extend(View.prototype, PubSub);
 
 var Model = Yii.Model = function(attributes, options) {
 	this.cid = _.uniqueId('yii_model_');
@@ -250,6 +344,8 @@ Model.prototype = {
 				that.attributes = data;
 			}
 
+			that.publish('fetch', that.attributes);
+
 			if (options.success) {
 				options.success(data, status, jqxhr);
 			}
@@ -263,22 +359,20 @@ Model.prototype = {
 		
 		saveOptions.type = 'POST';
 
+		var data = {};
+		_.extend(data, this.attributes, attributes);
+
 		if (options.form) {
 			var form_data = new FormData($(options.form)[0]);
+
+			for (var key in data) {
+				form_data.append(key, data[key]);
+			}
+
+			data = form_data;
 		}
 
-		if (form_data == undefined) {
-			var form_data = new FormData();
-		}
-
-		var attrs = this.attributes;
-		_.extend(attrs, attributes);
-
-		for (var key in attrs) {
-			form_data.append(key, attrs[key]);
-		}
-
-		saveOptions.data = form_data;
+		saveOptions.data = data;
 
 		saveOptions.success = options.success;
 
@@ -290,22 +384,20 @@ Model.prototype = {
 
 		updateOptions.type = 'PUT';
 		
+		var data = {};
+		_.extend(data, this.attributes, attributes);
+
 		if (options.form) {
 			var form_data = new FormData($(options.form)[0]);
+
+			for (var key in data) {
+				form_data.append(key, data[key]);
+			}
+
+			data = form_data;
 		}
 
-		if (form_data == undefined) {
-			var form_data = new FormData();
-		}
-
-		var attrs = this.attributes;
-		_.extend(attrs, attributes);
-
-		for (var key in attrs) {
-			form_data.append(key, attrs[key]);
-		}
-
-		updateOptions.data = form_data;
+		updateOptions.data = data;
 
 		updateOptions.success = options.success;
 
@@ -317,22 +409,20 @@ Model.prototype = {
 
 		destroyOptions.type = 'DELETE';
 		
+		var data = {};
+		_.extend(data, this.attributes, attributes);
+
 		if (options.form) {
 			var form_data = new FormData($(options.form)[0]);
+
+			for (var key in data) {
+				form_data.append(key, data[key]);
+			}
+
+			data = form_data;
 		}
 
-		if (form_data == undefined) {
-			var form_data = new FormData();
-		}
-
-		var attrs = this.attributes;
-		_.extend(attrs, attributes);
-
-		for (var key in attrs) {
-			form_data.append(key, attrs[key]);
-		}
-
-		destroyOptions.data = form_data;
+		destroyOptions.data = data;
 
 		destroyOptions.success = options.success;
 
@@ -359,6 +449,8 @@ Model.prototype = {
 		$.ajax(syncOptions);
 	}
 };
+
+_.extend(Model.prototype, PubSub);
 
 var extend = function(options) {
 	var parent = this;

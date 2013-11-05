@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
+	<script src="pubsub.js"></script>
+</head>
+<body>
+	<script>
+	var dog = {
+		bark: function(words) {
+			console.log('woof ' + words);
+		}
+	};
+
+	var pubsub = new PubSub();
+
+	pubsub.subscribe('woof', dog, function(words) {
+		this.bark(words);
+	});
+
+	pubsub.publish('woof', 'bone');
+	pubsub.publish('woof', 'meat');
+	pubsub.publish('cat', 'fish');
+	</script>
+</body>
+</html>

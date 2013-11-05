@@ -42,7 +42,7 @@
 					var myModel = new MyModel();
 
 					myModel.save({
-						'access_token' : '04504e105284569ea74030908d006252'
+						'access_token' : '65c0e4f3a2871927ac6239efebda9779'
 						}, {
 						form: '#add-movie-form',
 
@@ -58,8 +58,10 @@
 					var myModel = new MyModel();
 
 					myModel.destroy({
-						'access_token' : '04504e105284569ea74030908d006252'
+						'access_token' : '65c0e4f3a2871927ac6239efebda9779'
 						}, {
+						form: '#add-movie-form',
+						
 						success: function() {
 							console.log('success');
 						}
@@ -69,15 +71,21 @@
 				},
 
 				moo: function() {
+					console.log('test');
+
 					var myModel = new MyModel();
 
 					myModel.update({
-						'access_token' : '04504e105284569ea74030908d006252'
+						'access_token' : '65c0e4f3a2871927ac6239efebda9779'
 						}, {
 						form: '#add-movie-form',
 
 						success: function() {
 							console.log('success');
+						},
+
+						error:function(a, b, c) {
+							console.log(a, b, c);
 						}
 					});
 
@@ -89,7 +97,8 @@
 			myView.render();
 
 			var MyModel = Yii.Model.extend({
-				url: 'http://cs3213.herokuapp.com/movies/467.json'
+				url: 'http://cs3213.herokuapp.com/movies/513.json'
+				//url: 'http://cs3213.herokuapp.com/movies.json'
 			});
 		</script>
 	</body>

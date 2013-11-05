@@ -40,23 +40,45 @@
 
 				meow: function() {
 					alert('Goodbye World!');
+				},
+
+				initialize: function() {
+					this.subscribe('fetch', this, function(attributes) {
+						console.log('fetch trigger');
+						this.model = attributes;
+						this.render();
+					});
 				}
 			});
-
-			var myView = new MyView();
 
 			var MyModel = Yii.Model.extend({
 				url: 'http://cs3213.herokuapp.com/movies.json'
 			});
 
-			var myModel = new MyModel();
-			myModel.fetch({
-				success: function() {
-					myView.model = myModel.attributes;
+			var MyRouter = Yii.Router.extend({
+				initialize: function() {
+					this.myView = new MyView();
 
-					myView.render();
+					this.myModel = new MyModel();
+				},
+
+				routes: {
+					'': 'movie',
+				},
+
+				movie: function() {
+					console.log('route trigger');
+
+					this.myModel.fetch({
+						success: function() {
+							console.log('success');
+						}
+					});
 				}
 			});
+
+			var router = new MyRouter();
+			router.start();
 		</script>
 	</body>
 </html>
