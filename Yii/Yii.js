@@ -109,6 +109,8 @@
 	Navigator.prototype = {
 		routes: {},
 
+		routers: {},
+
 		started: false,
 
 		start: function() {
@@ -185,11 +187,19 @@
 						return this;
 					}
 
-					if (!_.isFunction(method)) {
-						method = this[method];
+					var router = this.routers[key];
+
+					if (!router) {
+						router = this;
 					}
 
-					method.apply(this, args);
+					console.log(router);
+
+					if (!_.isFunction(method)) {
+						method = router[method];
+					}
+
+					method.apply(router, args);
 				}
 			}
 		},
@@ -249,9 +259,7 @@
 
 				Yii.navigator.routes[key] = method;
 
-				if (!_.isFunction(method)) {
-					Yii.navigator[method] = this[method];
-				}
+				Yii.navigator.routers[key] = this;
 			}
 		}
 	};
