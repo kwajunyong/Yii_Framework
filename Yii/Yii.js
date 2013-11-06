@@ -193,8 +193,6 @@
 						router = this;
 					}
 
-					console.log(router);
-
 					if (!_.isFunction(method)) {
 						method = router[method];
 					}
