@@ -8,19 +8,37 @@
 	<body>
 		<script type="text/template" id="woof-template">
 			<div>
-				<p><h1>Movies</h1></p>
-				
-				<% _.each(collection , function(movie) { %>
-					<img src="<%= movie.img_url %>" width="100" height="100" style="border-width:1px;border-style:solid"></img>
-					<p><b>ID:</b> <%= movie.id %></p>
-					<p><b>Title:</b> <%= movie.title %></p>
-				<% }); %>
+				<p><h1>Movie</h1></p>
+				<img src="<%= img_url %>" width="100" height="100" style="border-width:1px;border-style:solid"></img>
+				<p><b>ID:</b> <%= id %></p>
+				<p><b>Title:</b> <%= title %></p>
+				<p><b>Summary:</b> <%= summary %></p>
 				
 				<p><button type="submit" id="hello">Click me</button></p>
 				<p><button type="submit" id="goodbye">Click me</button></p>
 			</div>
 		</script>
 		
+		<script type="text/template" id="meow-template">
+			<div>
+				<form id="add-movie-form">
+					<legend>New Movie</legend>
+					<label>ID</label>
+					<%= id %>
+					<label>Title</label>
+					<input name="movie[title]" type="text" value="<%= title %>" />
+					<label>Summary</label>
+					<input name="movie[summary]" type="text" value="<%= summary %>" />
+					<label>Image</label>
+					<input name="movie[img]" type="file" />
+					<br/>
+					<button type="submit" id="add">Create Movie</button>
+					<button type="submit" id="delete">Delete Movie</button>
+					<button type="submit" id="update">Update Movie</button>
+				</form>
+			</div>
+		</script>
+
 		<div id="viewer"></div>
 
 		<script>
@@ -43,8 +61,35 @@
 				},
 
 				initialize: function() {
-					this.subscribe('fetch', this, function(attributes) {
-						console.log('fetch trigger');
+					this.subscribe('view', this, function(attributes) {
+						console.log('topic view trigger');
+						this.model = attributes;
+						this.render();
+					});
+				}
+			});
+
+			var MyView2 = Yii.View.extend({
+				id: 'viewer',
+
+				template: $('#meow-template').html(),
+
+				events: {
+					'click #hello': 'woof',
+					'click #goodbye': 'meow'
+				},
+
+				woof: function() {
+					alert('Hello World!');
+				},
+
+				meow: function() {
+					alert('Goodbye World!');
+				},
+
+				initialize: function() {
+					this.subscribe('edit', this, function(attributes) {
+						console.log('topic edit trigger');
 						this.model = attributes;
 						this.render();
 					});
@@ -52,29 +97,46 @@
 			});
 
 			var MyModel = Yii.Model.extend({
-				url: 'http://cs3213.herokuapp.com/movies.json'
+				url: 'http://cs3213.herokuapp.com/movies/462.json'
 			});
 
 			var MyRouter = Yii.Router.extend({
 				initialize: function() {
-					this.myView = new MyView();
+					this.myView1 = new MyView();
+					this.myView2 = new MyView2();
 
 					this.myModel = new MyModel();
 				},
 
 				routes: {
-					'': 'movie',
+					'': 'view',
+					'1': 'view',
+					'2': 'eidt'
 				},
 
-				movie: function() {
-					console.log('route trigger');
+				view: function() {
+					console.log('route view trigger');
+
+					var that = this;
 
 					this.myModel.fetch({
-						success: function() {
-							console.log('success');
+						success: function(data) {
+							that.publish('view', data);
 						}
 					});
-				}
+				},
+
+				eidt: function() {
+					console.log('route edit trigger');
+
+					var that = this;
+
+					this.myModel.fetch({
+						success: function(data) {
+							that.publish('edit', data);
+						}
+					});
+				},
 			});
 
 			var router = new MyRouter();
