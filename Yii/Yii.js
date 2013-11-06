@@ -106,7 +106,7 @@
 
 	var Router = Yii.Router = function(options) {
 		this.initialize.apply(this, arguments);
-	}
+	};
 
 	Router.prototype = {
 		started: false,
@@ -223,7 +223,7 @@
 				path : a.pathname.replace(/^([^\/])/, '/$1'),
 				relative : (a.href.match(/tps?:\/\/[^\/]+(.+)/) || [,''])[1],
 				segments : a.pathname.replace(/^\//, '').split('/')
-			}
+			};
 		}
 	};
 
@@ -234,7 +234,7 @@
 		this.initialize.apply(this, arguments);
 		this.loadElement();
 		this.bindEvents();
-	}
+	};
 
 	View.prototype = {
 		eventsKeyPattern:  /^(\S+)\s*(.*)$/,
@@ -312,7 +312,7 @@
 		attrs = _.defaults({}, attrs, _.result(this, 'defaults'));
 		this.set(attrs);
 		this.initialize.apply(this, arguments);
-	}
+	};
 
 	Model.prototype = {
 		url: '',
