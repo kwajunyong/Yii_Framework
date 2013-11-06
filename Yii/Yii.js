@@ -331,7 +331,7 @@
 		},
 
 		render: function () {
-			var output = _.template(this.template, this.model);
+			var output = (_.isFunction(this.template)) ? this.template(this.model) : _.template(this.template, this.model);
 			this.element.html(output);
 
 			return this;
