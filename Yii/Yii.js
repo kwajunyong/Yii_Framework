@@ -376,12 +376,27 @@
 			this.attributes[key] = value;
 		},
 
-		fetch: function(options) {
+		fetch: function(options, attributes) {
 			var that = this;
 
 			var getOptions = {};
 
 			getOptions.type = 'GET';
+
+			var data = {};
+			_.extend(data, this.attributes, attributes);
+
+			if (options.form) {
+				var form_data = new FormData($(options.form)[0]);
+
+				for (var key in data) {
+					form_data.append(key, data[key]);
+				}
+
+				data = form_data;
+			}
+
+			getOptions.data = data;
 
 			getOptions.success = function(data, status, jqxhr) {
 				if (_.isArray(data)) {
