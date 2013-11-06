@@ -104,20 +104,16 @@
 		}
 	};
 
-	var Router = Yii.Router = function(options) {
-		this.initialize.apply(this, arguments);
-	};
+	var Navigator = Yii.Navigator = function() {};
 
-	Router.prototype = {
-		started: false,
-
+	Navigator.prototype = {
 		routes: {},
 
-		initialize: function() {},
+		started: false,
 
 		start: function() {
 			if (this.started) {
-				throw new Error("Router has already been started!");
+				throw new Error("Navigator has already been started!");
 			}
 
 			this.currentHash = this._parseURL(document.URL).hash;
@@ -183,7 +179,7 @@
 				}
 
 				if (match) {
-					method = this.routes[key];
+					var method = this.routes[key];
 
 					if (!method) {
 						return this;
@@ -224,6 +220,39 @@
 				relative : (a.href.match(/tps?:\/\/[^\/]+(.+)/) || [,''])[1],
 				segments : a.pathname.replace(/^\//, '').split('/')
 			};
+		}
+	};
+
+	Yii.navigator = new Navigator();
+
+	var Router = Yii.Router = function(options) {
+		this._bindRoutes();
+		this.initialize.apply(this, arguments);
+	};
+
+	Router.prototype = {
+		routes: {},
+
+		initialize: function() {},
+
+		navigate: function(url, trigger) {
+			Yii.navigator.navigate(url, trigger);
+		},
+
+		_bindRoutes: function() {
+			for (var key in this.routes) {
+				var method = this.routes[key];
+
+				if (!method) {
+					return this;
+				}
+
+				Yii.navigator.routes[key] = method;
+
+				if (!_.isFunction(method)) {
+					Yii.navigator[method] = this[method];
+				}
+			}
 		}
 	};
 
