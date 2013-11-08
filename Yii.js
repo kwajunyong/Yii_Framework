@@ -14,106 +14,97 @@
 	};
 
 	var PubSub = Yii.PubSub = {
-		slice: [].slice,
+		slice : [].slice,
 
-		subscriptions: {},
+		subscriptions : {},
 
-		publish: function( topic ) {
-			var args = this.slice.call( arguments, 1 ),
-			topicSubscriptions,
-			subscription,
-			length,
-			i = 0,
-			ret;
+		publish : function(topic) {
+			var args = this.slice.call(arguments, 1), topicSubscriptions, subscription, length, i = 0, ret;
 
-			if ( !this.subscriptions[ topic ] ) {
+			if (!this.subscriptions[topic]) {
 				return true;
 			}
 
-			topicSubscriptions = this.subscriptions[ topic ].slice();
-			for ( length = topicSubscriptions.length; i < length; i++ ) {
-				subscription = topicSubscriptions[ i ];
-				ret = subscription.callback.apply( subscription.context, args );
-				if ( ret === false ) {
+			topicSubscriptions = this.subscriptions[topic].slice();
+			for ( length = topicSubscriptions.length; i < length; i++) {
+				subscription = topicSubscriptions[i];
+				ret = subscription.callback.apply(subscription.context, args);
+				if (ret === false) {
 					break;
 				}
 			}
 			return ret !== false;
 		},
 
-		subscribe: function( topic, context, callback, priority ) {
-			if ( arguments.length === 3 && typeof callback === "number" ) {
+		subscribe : function(topic, context, callback, priority) {
+			if (arguments.length === 3 && typeof callback === "number") {
 				priority = callback;
 				callback = context;
 				context = null;
 			}
-			if ( arguments.length === 2 ) {
+			if (arguments.length === 2) {
 				callback = context;
 				context = null;
 			}
 			priority = priority || 10;
 
-			var topicIndex = 0,
-			topics = topic.split( /\s/ ),
-			topicLength = topics.length,
-			added;
-			for ( ; topicIndex < topicLength; topicIndex++ ) {
-				topic = topics[ topicIndex ];
+			var topicIndex = 0, topics = topic.split(/\s/), topicLength = topics.length, added;
+			for (; topicIndex < topicLength; topicIndex++) {
+				topic = topics[topicIndex];
 				added = false;
-				if ( !this.subscriptions[ topic ] ) {
-					this.subscriptions[ topic ] = [];
+				if (!this.subscriptions[topic]) {
+					this.subscriptions[topic] = [];
 				}
 
-				var i = this.subscriptions[ topic ].length - 1,
-				subscriptionInfo = {
-					callback: callback,
-					context: context,
-					priority: priority
+				var i = this.subscriptions[topic].length - 1, subscriptionInfo = {
+					callback : callback,
+					context : context,
+					priority : priority
 				};
 
-				for ( ; i >= 0; i-- ) {
-					if ( this.subscriptions[ topic ][ i ].priority <= priority ) {
-						this.subscriptions[ topic ].splice( i + 1, 0, subscriptionInfo );
+				for (; i >= 0; i--) {
+					if (this.subscriptions[ topic ][i].priority <= priority) {
+						this.subscriptions[topic].splice(i + 1, 0, subscriptionInfo);
 						added = true;
 						break;
 					}
 				}
 
-				if ( !added ) {
-					this.subscriptions[ topic ].unshift( subscriptionInfo );
+				if (!added) {
+					this.subscriptions[topic].unshift(subscriptionInfo);
 				}
 			}
 
 			return callback;
 		},
 
-		unsubscribe: function( topic, callback ) {
-			if ( !this.subscriptions[ topic ] ) {
+		unsubscribe : function(topic, callback) {
+			if (!this.subscriptions[topic]) {
 				return;
 			}
 
-			var length = this.subscriptions[ topic ].length,
-			i = 0;
+			var length = this.subscriptions[topic].length, i = 0;
 
-			for ( ; i < length; i++ ) {
-				if ( this.subscriptions[ topic ][ i ].callback === callback ) {
-					this.subscriptions[ topic ].splice( i, 1 );
+			for (; i < length; i++) {
+				if (this.subscriptions[ topic ][i].callback === callback) {
+					this.subscriptions[topic].splice(i, 1);
 					break;
 				}
 			}
 		}
 	};
 
-	var Navigator = Yii.Navigator = function() {};
+	var Navigator = Yii.Navigator = function() {
+	};
 
 	Navigator.prototype = {
-		routes: {},
+		routes : {},
 
-		routers: {},
+		routers : {},
 
-		started: false,
+		started : false,
 
-		start: function() {
+		start : function() {
 			if (this.started) {
 				throw new Error("Navigator has already been started!");
 			}
@@ -136,13 +127,13 @@
 			this.started = true;
 		},
 
-		stop: function() {
+		stop : function() {
 			window.onpopstate = null;
 
 			this.started = false;
 		},
 
-		navigate: function(url, trigger) {
+		navigate : function(url, trigger) {
 			window.history.pushState({}, '', url);
 
 			if (trigger) {
@@ -150,7 +141,7 @@
 			}
 		},
 
-		_triggerRoutes: function(hash) {
+		_triggerRoutes : function(hash) {
 			var hashSegments = hash.split('/');
 
 			for (var key in this.routes) {
@@ -202,7 +193,7 @@
 			}
 		},
 
-		_parseURL: function(url) {
+		_parseURL : function(url) {
 			var a = document.createElement('a');
 			a.href = url;
 			return {
@@ -239,15 +230,20 @@
 	};
 
 	Router.prototype = {
-		routes: {},
+		models : {},
 
-		initialize: function() {},
+		views : {},
 
-		navigate: function(url, trigger) {
+		routes : {},
+
+		initialize : function() {
+		},
+
+		navigate : function(url, trigger) {
 			Yii.navigator.navigate(url, trigger);
 		},
 
-		_bindRoutes: function() {
+		_bindRoutes : function() {
 			for (var key in this.routes) {
 				var method = this.routes[key];
 
@@ -256,7 +252,6 @@
 				}
 
 				Yii.navigator.routes[key] = method;
-
 				Yii.navigator.routers[key] = this;
 			}
 		}
@@ -272,13 +267,18 @@
 	};
 
 	View.prototype = {
-		eventsKeyPattern:  /^(\S+)\s*(.*)$/,
+		eventsKeyPattern : /^(\S+)\s*(.*)$/,
 
-		element: $('div'),
+		element : $('div'),
 
-		initialize: function() {},
+		model : {},
 
-		loadElement:function() {
+		template : '',
+
+		initialize : function() {
+		},
+
+		loadElement : function() {
 			if (!this.selector) {
 				this.selector = '';
 				this.selector += (this.tagName) ? this.tagName : '';
@@ -289,7 +289,7 @@
 			this.element = $(this.selector);
 		},
 
-		bindEvents: function() {
+		bindEvents : function() {
 			if (!this.events) {
 				return this;
 			}
@@ -324,17 +324,22 @@
 			return this;
 		},
 
-		unbindEvents: function() {
-			this.element.off('yii_view_' + this.cid);
+		unbindEvents : function() {
+			this.element.off(this.cid);
 
 			return this;
 		},
 
-		render: function () {
+		render : function() {
 			var output = (_.isFunction(this.template)) ? this.template(this.model) : _.template(this.template, this.model);
 			this.element.html(output);
 
 			return this;
+		},
+
+		remove : function() {
+			this.unbindEvents();
+			this.element.empty();
 		}
 	};
 
@@ -343,66 +348,56 @@
 	var Model = Yii.Model = function(attributes, options) {
 		this.cid = _.uniqueId('yii_model_');
 		var attrs = attributes || {};
-		options || (options = {});
+		options || ( options = {});
 		attrs = _.defaults({}, attrs, _.result(this, 'defaults'));
 		this.set(attrs);
 		this.initialize.apply(this, arguments);
 	};
 
 	Model.prototype = {
-		url: '',
+		url : '',
 
-		attributes: {},
+		attributes : {},
 
-		initialize: function() {},
+		initialize : function() {
+		},
 
-		get: function(attr) {
+		get : function(attr) {
 			return this.attributes[attr];
 		},
 
-		has: function(attr) {
+		has : function(attr) {
 			return this.get(attr) != null;
 		},
 
-		clear: function() {
+		clear : function() {
 			this.attributes = {};
 		},
 
-		set: function(attrs) {
+		set : function(attrs) {
 			this.attributes = attrs;
 		},
 
-		setElement: function(key, value) {
+		setElement : function(key, value) {
 			this.attributes[key] = value;
 		},
 
-		fetch: function(options, attributes) {
+		setURL : function(url) {
+			this.url = url;
+		},
+
+		fetch : function(options) {
 			var that = this;
 
-			var getOptions = {};
+			var getOptions = _.extend({}, options);
 
 			getOptions.type = 'GET';
-
-			var data = {};
-			_.extend(data, this.attributes, attributes);
-
-			if (options.form) {
-				var form_data = new FormData($(options.form)[0]);
-
-				for (var key in data) {
-					form_data.append(key, data[key]);
-				}
-
-				data = form_data;
-			}
-
-			getOptions.data = data;
 
 			getOptions.success = function(data, status, jqxhr) {
 				if (_.isArray(data)) {
 					that.attributes = {
-						collection: data
-					};	
+						collection : data
+					};
 				} else {
 					that.attributes = data;
 				}
@@ -415,63 +410,47 @@
 			this.sync(getOptions);
 		},
 
-		save: function(attributes, options) {
-			var saveOptions = {};
+		save : function(options) {
+			var saveOptions = _.extend({}, options);
+			;
 
 			saveOptions.type = 'POST';
-
-			var data = {};
-			_.extend(data, this.attributes, attributes);
-
-			if (options.form) {
-				var form_data = new FormData($(options.form)[0]);
-
-				for (var key in data) {
-					form_data.append(key, data[key]);
-				}
-
-				data = form_data;
-			}
-
-			saveOptions.data = data;
-
-			saveOptions.success = options.success;
 
 			this.sync(saveOptions);
 		},
 
-		update: function(attributes, options) {
-			updateOptions = {};
+		update : function(options) {
+			updateOptions = options;
 
 			updateOptions.type = 'PUT';
-
-			var data = {};
-			_.extend(data, this.attributes, attributes);
-
-			if (options.form) {
-				var form_data = new FormData($(options.form)[0]);
-
-				for (var key in data) {
-					form_data.append(key, data[key]);
-				}
-
-				data = form_data;
-			}
-
-			updateOptions.data = data;
-
-			updateOptions.success = options.success;
 
 			this.sync(updateOptions);
 		},
 
-		destroy: function(attributes, options) {
-			destroyOptions = {};
+		destroy : function(options) {
+			destroyOptions = _.extend({}, options);
 
 			destroyOptions.type = 'DELETE';
 
-			var data = {};
-			_.extend(data, this.attributes, attributes);
+			this.sync(destroyOptions);
+		},
+
+		sync : function(options) {
+			syncOptions = {
+				type : options.type,
+
+				cache : false,
+				contentType : false,
+				processData : false,
+
+				success : options.success,
+
+				error : options.error
+			};
+
+			syncOptions.url = (options.url) ? options.url : this.url;
+
+			var data = _.extend({}, this.attributes, options.attributes);
 
 			if (options.form) {
 				var form_data = new FormData($(options.form)[0]);
@@ -483,29 +462,7 @@
 				data = form_data;
 			}
 
-			destroyOptions.data = data;
-
-			destroyOptions.success = options.success;
-
-			this.sync(destroyOptions);
-		},
-
-		sync: function(options) {
-			syncOptions = {
-				type: options.type,
-
-				url: this.url,
-
-				data: options.data,
-
-				cache: false,
-				contentType: false,
-				processData: false,
-
-				success: options.success,
-
-				error: options.error
-			};
+			syncOptions.data = data;
 
 			$.ajax(syncOptions);
 		}
@@ -520,11 +477,13 @@
 		if (options && _.has(options, 'constructor')) {
 			child = options.constructor;
 		} else {
-			child = function(){ return parent.apply(this, arguments); };
+			child = function() {
+				return parent.apply(this, arguments);
+			};
 		}
 
-		var Surrogate = function() { 
-			this.constructor = child; 
+		var Surrogate = function() {
+			this.constructor = child;
 		};
 
 		Surrogate.prototype = parent.prototype;
@@ -532,12 +491,12 @@
 
 		if (options) {
 			_.extend(child.prototype, options);
-		} 
+		}
 
 		child.__super__ = parent.prototype;
 
 		return child;
 	};
 
-	Router.extend = Model.extend = View.extend = extend;
+	Navigator.extend = Router.extend = Model.extend = View.extend = extend;
 }).call(this);
