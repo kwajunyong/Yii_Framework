@@ -412,7 +412,6 @@
 
 		save : function(options) {
 			var saveOptions = _.extend({}, options);
-			;
 
 			saveOptions.type = 'POST';
 
@@ -420,7 +419,7 @@
 		},
 
 		update : function(options) {
-			updateOptions = options;
+			updateOptions = _.extend({}, options);
 
 			updateOptions.type = 'PUT';
 
