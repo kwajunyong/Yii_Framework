@@ -133,8 +133,16 @@
 			this.started = false;
 		},
 
-		navigate : function(url, trigger) {
-			window.history.pushState({}, '', url);
+		navigate : function(url, trigger, replace) {
+			if (!this.started) {
+				return false;
+			}
+
+			if (!replace) {
+				window.history.pushState({}, '', url);
+			} else {
+				window.history.replaceState({}, '', url);
+			}
 
 			if (trigger) {
 				this._triggerRoutes(this._parseURL(document.URL).hash);
