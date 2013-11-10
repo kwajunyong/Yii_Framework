@@ -27,7 +27,7 @@
 
 			topicSubscriptions = this.subscriptions[topic].slice();
 
-			for (length = topicSubscriptions.length; i < length; i++) {
+			for ( length = topicSubscriptions.length; i < length; i++) {
 				subscription = topicSubscriptions[i];
 
 				ret = subscription.notifyFunction.apply(subscription.topicContent, args);
@@ -138,7 +138,11 @@
 			}
 
 			if (trigger) {
-				this._triggerRoutes(this._parseURL(document.URL).hash);
+				var hash = this._parseURL(document.URL).hash;
+
+				this._triggerRoutes(hash);
+
+				this.currentHash = hash;
 			}
 		},
 
