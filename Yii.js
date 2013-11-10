@@ -26,59 +26,52 @@
 			}
 
 			topicSubscriptions = this.subscriptions[topic].slice();
-			for ( length = topicSubscriptions.length; i < length; i++) {
+
+			for (length = topicSubscriptions.length; i < length; i++) {
 				subscription = topicSubscriptions[i];
-				ret = subscription.callback.apply(subscription.context, args);
+
+				ret = subscription.notifyFunction.apply(subscription.topicContent, args);
+
 				if (ret === false) {
 					break;
 				}
 			}
+
 			return ret !== false;
 		},
 
-		subscribe : function(topic, context, callback, priority) {
-			if (arguments.length === 3 && typeof callback === "number") {
-				priority = callback;
-				callback = context;
-				context = null;
-			}
+		subscribe : function(topic, topicContent, notifyFunction) {
 			if (arguments.length === 2) {
-				callback = context;
-				context = null;
+				notifyFunction = topicContent;
+				topicContent = null;
 			}
-			priority = priority || 10;
 
 			var topicIndex = 0, topics = topic.split(/\s/), topicLength = topics.length, added;
+
 			for (; topicIndex < topicLength; topicIndex++) {
+
 				topic = topics[topicIndex];
+
 				added = false;
+
 				if (!this.subscriptions[topic]) {
 					this.subscriptions[topic] = [];
 				}
 
 				var i = this.subscriptions[topic].length - 1, subscriptionInfo = {
-					callback : callback,
-					context : context,
-					priority : priority
+					notifyFunction : notifyFunction,
+					topicContent : topicContent,
 				};
-
-				for (; i >= 0; i--) {
-					if (this.subscriptions[ topic ][i].priority <= priority) {
-						this.subscriptions[topic].splice(i + 1, 0, subscriptionInfo);
-						added = true;
-						break;
-					}
-				}
 
 				if (!added) {
 					this.subscriptions[topic].unshift(subscriptionInfo);
 				}
 			}
 
-			return callback;
+			return notifyFunction;
 		},
 
-		unsubscribe : function(topic, callback) {
+		unsubscribe : function(topic, notifyFunction) {
 			if (!this.subscriptions[topic]) {
 				return;
 			}
@@ -86,7 +79,7 @@
 			var length = this.subscriptions[topic].length, i = 0;
 
 			for (; i < length; i++) {
-				if (this.subscriptions[ topic ][i].callback === callback) {
+				if (this.subscriptions[ topic ][i].notifyFunction === notifyFunction) {
 					this.subscriptions[topic].splice(i, 1);
 					break;
 				}
