@@ -244,8 +244,8 @@
 		initialize : function() {
 		},
 
-		navigate : function(url, trigger) {
-			Yii.navigator.navigate(url, trigger);
+		navigate : function(url, trigger, replace) {
+			Yii.navigator.navigate(url, trigger, replace);
 		},
 
 		_bindRoutes : function() {
