@@ -152,7 +152,7 @@ Stores the jquery element object to be rendered on view. It has a default value 
 <b>template</b> `view.template` <br/>
 Contains either the template function or the template string to be rendered on view
 		
-<b>loadElement</b> `view.loadElement` <br/>
+<b>loadElement</b> `view.loadElement()` <br/>
 Load `element` from `selector` if it is being defined, otherwise load `element` from `tagName`, `id` and `className`.
 
 <b>events</b> `view.events` <br/>
