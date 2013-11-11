@@ -412,7 +412,7 @@
 				}
 			};
 
-			this.sync(getOptions);
+			this._sync(getOptions);
 		},
 
 		save : function(options) {
@@ -420,7 +420,7 @@
 
 			saveOptions.type = 'POST';
 
-			this.sync(saveOptions);
+			this._sync(saveOptions);
 		},
 
 		update : function(options) {
@@ -428,7 +428,7 @@
 
 			updateOptions.type = 'PUT';
 
-			this.sync(updateOptions);
+			this._sync(updateOptions);
 		},
 
 		destroy : function(options) {
@@ -436,10 +436,10 @@
 
 			destroyOptions.type = 'DELETE';
 
-			this.sync(destroyOptions);
+			this._sync(destroyOptions);
 		},
 
-		sync : function(options) {
+		_sync : function(options) {
 			syncOptions = {
 				type : options.type,
 
