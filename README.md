@@ -53,3 +53,15 @@ Update url to the given hash. Route function is triggered if trigger is set `tru
 -----------
 <b>PubSub</b>
 ------------
+PubSub provides publish and subscribe functions to implement Observer Pattern in the webpage by using `Yii.PubSub`
+
+<b>start</b> `Yii.PubSub.publish(topic)` <br/>
+Used to subscribe to a topic specified by the parameter
+
+<b>start</b> `Yii.PubSub.subscribe(topic, topicContent, notifyFunction)` <br/>
+Used to publish a topic to all the subscribers based on the topic published. 
+The topicContent will further differentiate the various subscribers in the same topic accordingly. 
+notifyFunction is the function that will be executed on the subscribers' side when the they are notified.
+
+<b>start</b> `Yii.PubSub.publish(topic, notifyFunction)` <br/>
+Unsubscribe the caller from the specific topic and remove the notifyFunction from the subscription records
