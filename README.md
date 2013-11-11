@@ -60,8 +60,8 @@ Used to subscribe to a topic specified by the parameter
 
 <b>start</b> `Yii.PubSub.subscribe(topic, topicContent, notifyFunction)` <br/>
 Used to publish a topic to all the subscribers based on the topic published. 
-The topicContent will further differentiate the various subscribers in the same topic accordingly. 
-notifyFunction is the function that will be executed on the subscribers' side when the they are notified.
+The `topicContent` will further differentiate the various subscribers in the same topic accordingly. 
+`notifyFunction` is the function that will be executed on the subscribers' side when the they are notified.
 
 <b>start</b> `Yii.PubSub.publish(topic, notifyFunction)` <br/>
-Unsubscribe the caller from the specific topic and remove the notifyFunction from the subscription records
+Unsubscribe the caller from the specific topic and remove the `notifyFunction` from the subscription records
